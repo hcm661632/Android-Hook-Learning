@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
@@ -21,6 +22,8 @@ import com.hua.hookbinder.server.ams_pkms.PMSHookHelper;
 import com.hua.hookbinder.server.audiomanager.AudioManagerProxyHookHandler;
 import com.hua.hookbinder.server.clipboard.BinderHookHelper;
 import com.hua.hookbinder.server.power.PowerBinderHookHelper;
+import com.hua.hookbinder.service.ServiceHookHelper;
+import com.hua.hookbinder.service.TestService;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     static {
         System.loadLibrary("native-lib");
     }
+
+    private Intent serviceIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
        // getInstallApplication(getBaseContext());
       // PMSHookHelper.hookPackageManager2(this);                 // OK
       //  PowerBinderHookHelper.hookPowerManagerService();        // OK
-        BinderHookHelper.hookAudioManager();                    // OK
+      //  BinderHookHelper.hookAudioManager();                    // OK
+        ServiceHookHelper.hookService();
 
     }
 
@@ -73,10 +79,17 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         ActivityManager am = (ActivityManager)getSystemService(ACTIVITY_SERVICE);
         am.getRunningServices(10);
-
-
-
         ClipboardManager cp = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(serviceIntent!=null) {
+            stopService(serviceIntent);
+            Log.d("HHH","Stop Service");
+        }
 
     }
 
@@ -87,8 +100,13 @@ public class MainActivity extends AppCompatActivity {
 //        boolean isPowerSaveMode = pm.isPowerSaveMode();
 //        Log.d("HHH","isPowerSaveMode " + isPowerSaveMode);
 
-        AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
-        int streamAlarmMaxVolume = am.getStreamMaxVolume(AudioManager.STREAM_ALARM);
-        Log.d("HHH","streamAlarmMaxVolume = " + streamAlarmMaxVolume);
+//        AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
+//        int streamAlarmMaxVolume = am.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+//        Log.d("HHH","streamAlarmMaxVolume = " + streamAlarmMaxVolume);
+
+        serviceIntent = new Intent(this, TestService.class);
+        startService(serviceIntent);
+
+
     }
 }

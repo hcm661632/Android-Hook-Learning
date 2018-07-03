@@ -2,13 +2,17 @@ package com.hua.hookbinder.reflect;
 
 public class People {
 
-    Man man;
+    public Man mMan = new Man("ManName",120);
 
-    public Man getMan() {
-        if(man == null) {
-            return new Man("MMan",12);
-        } else {
-            return man;
+    private static Woman mWoman = new Woman("staticWomanName",122);
+
+    static String getWomanName(){
+
+        if(mWoman == null ) {
+            mWoman = new Woman("WomanName",111);
         }
+        return mWoman.name;
     }
+
+
 }

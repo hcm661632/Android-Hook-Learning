@@ -1,8 +1,13 @@
 package com.hua.hookbinder;
 
+import com.hua.hookbinder.reflect.Man;
+import com.hua.hookbinder.reflect.People;
+import com.hua.hookbinder.reflect.Woman;
+
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import static org.junit.Assert.*;
 
@@ -27,25 +32,32 @@ public class ExampleUnitTest {
 
     void testPerson(){
         try {
-            Class<?> personClz = Class.forName("com.hua.hookbinder.reflect.Person");
-            Object o1 = personClz.newInstance();
+            Class<?> peopleCls = Class.forName("com.hua.hookbinder.reflect.People");
+            People people = (People) peopleCls.newInstance();
+            Field mManField = peopleCls.getDeclaredField("mMan");      mManField.setAccessible(true);
 
-            Field nameField = personClz.getDeclaredField("name");nameField.setAccessible(true);
-           // nameField.set(o1,"Spring");
-            Object o = nameField.get(o1);
-            if(o != null) {
-                System.out.println(o.toString());
-            }
+            Man m = (Man) mManField.get(people);
+            System.out.println(m.getName());
+
+            Field mWomanField = peopleCls.getDeclaredField("mWoman"); mWomanField.setAccessible(true);
+            Woman woman = (Woman) mWomanField.get(null);
+            System.out.println(woman.getClass().getName());
+
+            Class<?> womanCls = Class.forName("com.hua.hookbinder.reflect.Woman");
+            Field womanNameFiled = womanCls.getDeclaredField("name"); womanNameFiled.setAccessible(true);
+            Object o = womanNameFiled.get(woman);
+            System.out.println(o);
 
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
         } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }  catch (NoSuchFieldException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
             e.printStackTrace();
         }
-
     }
+
+
 }
